@@ -1,21 +1,24 @@
-from src.controllers import BancoUsuario, Validacoes
+from src.controllers import UsuarioController, Validacoes
 from src.models import Usuario
 from getpass import getpass
+import os
 
 class Index(Validacoes):
     def __init__(self) -> None:
         self.__acoes_print = {
             '1': 'Salvar um novo usuário e senha.',
-            '2': 'Buscar usuário e senha pelo ID',
-            '3': 'Buscar usuario e senha pelo nm_usuario',
-            '4': 'Buscar todos usuários',
-            '5': 'Excluír usuário pelo ID',
+            '2': 'Buscar ID',
+            '3': 'Buscar Usuário',
+            '4': 'Buscar Site',
+            '5': 'Buscar todos Usuários',
+            '6': 'Excluír usuário pelo ID',
+            '7': 'Limpar Tela',
             '0': 'Sair'
         }
         self.__exec_acoes = None
 
     def inicio(self) -> None:
-        self.__db = BancoUsuario()
+        self.__db = UsuarioController()
         self.__db.criar_banco()
         print('=' * 25 + 'Cofre de Senhas' + '=' *25)
         while True:
@@ -34,8 +37,10 @@ class Index(Validacoes):
                 '1': lambda: self.__salvar_usuario(),
                 '2': lambda: self.__pesquisa_usario_id(),
                 '3': lambda: self.__pesquisa_usuario_nm_usuario(),
-                '4': lambda: self.__db.pesquisar_usuarios(),
-                '5': lambda: self.__excluir_usuairo_id(),
+                '4': lambda: self.__pesquisar_site(),
+                '5': lambda: self.__db.pesquisar_usuarios(),
+                '6': lambda: self.__excluir_usuairo_id(),
+                '7': lambda: os.system('cls' if os.name == 'nt' else 'clear'),
                 '0': lambda: exit()
             }
 
@@ -55,11 +60,15 @@ class Index(Validacoes):
     def __pesquisa_usario_id(self):
         id_usuario = input('Digite id usuario: ')
         id_usuario = self.__convert_numero_str_para_inteiro(id_usuario)
-        self.__db.pesquisar_usuario(id_usuario=id_usuario, nm_usuario=None)
+        self.__db.pesquisar_usuario(id_usuario=id_usuario)
 
     def __pesquisa_usuario_nm_usuario(self):
         nm_usuario = input('Digite seu usuario: ')
-        self.__db.pesquisar_usuario(id_usuario=None, nm_usuario=nm_usuario)
+        self.__db.pesquisar_usuario(nm_usuario=nm_usuario)
+
+    def __pesquisar_site(self):
+        nm_site = input('Digite o Site: ')
+        self.__db.pesquisar_usuario(nm_site=nm_site)
 
     def __excluir_usuairo_id(self):
         id_usuario = input('Digite id usuario: ')
@@ -74,12 +83,5 @@ class Index(Validacoes):
         
         return int(nr_texto)
 
-
-
-
 if __name__ == '__main__':
     Index().inicio()
-        
-        
-
-    

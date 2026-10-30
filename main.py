@@ -6,5 +6,7 @@ try:
 except FileNotFoundError as error:
     print(error)
     sleep(10)
+except KeyboardInterrupt:
+    exit()
 
 

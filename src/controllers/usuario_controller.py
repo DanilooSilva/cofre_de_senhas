@@ -9,7 +9,7 @@ from src.models import Usuario
 from src.controllers.validacoes import Validacoes
 from src.controllers.senhas import Senhas
 
-class BancoUsuario(Validacoes):
+class UsuarioController(Validacoes):
     def __init__(self) -> None:
         self.__usuario = None
         self.__caminho_db =  Path.home()/'Documents'/'cofreSenha'/'db_usuario.json'
@@ -36,18 +36,26 @@ class BancoUsuario(Validacoes):
             )
             self.__salvar_usuarios_json()
 
-    def pesquisar_usuario(self, id_usuario: int|None, nm_usuario: str|None) -> None:
+    def pesquisar_usuario(
+            self, id_usuario: int|None = None, 
+            nm_usuario: str|None = None,
+            nm_site: str|None = None) -> None:
         self.__ler_usuarios()
         if id_usuario is not None:
             if not self._valida_numero_inteiro(id_usuario):
                 print('O id_usuario inválido, Necessário informar um número inteiro!')
             self.__get_usuario_id(id_usuario)
             return None
-        if nm_usuario is not None:
+        elif nm_usuario is not None:
             if not self._valida_string(nm_usuario):
-                print('O nm_usuario inválido, Necessário informar um texto!')
+                print('O Usuário inválido!')
                 return None
-            self.__get_usuario_nm_usuario(nm_usuario)
+            self.__get_usuario(nm_usuario)
+        elif nm_site is not None:
+            if not self._valida_string(nm_site):
+                print('Site inválido!')
+                return None
+            self.__get_site(nm_site)
         return None
 
     def pesquisar_usuarios(self) -> None:
@@ -55,7 +63,7 @@ class BancoUsuario(Validacoes):
         if not self._valida_lista_vazia(self.__lista_usuarios):
             for id, user in enumerate(self.__lista_usuarios):
                 self.__print_usuario(id + 1, user)
-
+        
     def excluir_usuario(self, id_usuario: int) -> None:
         if os.path.exists(self.__caminho_db):
 
@@ -85,34 +93,44 @@ class BancoUsuario(Validacoes):
 
     def __get_usuario_id(self, id_usuario: int) -> None:
         if not self._valida_numero_inteiro(id_usuario):
-            print('O id_usuario inválido, Necessário informar um número inteiro!')
+            print('O ID inválido!')
             return None
-        if self._valida_lista_vazia(self.__lista_usuarios):
-            print(f'"id_usuario" não existe!')
-            return None
-        if not self._existe_indice_lista(self.__lista_usuarios, id_usuario - 1):
-            print(f'ID informado não existe!')
+        if self._valida_lista_vazia(self.__lista_usuarios) or \
+            not self._existe_indice_lista(self.__lista_usuarios, id_usuario - 1):
+            print(f'ID não existe!')
             return None
         self.__print_usuario(id_usuario, dict())
         return None
 
-    def __get_usuario_nm_usuario(self, nm_usuario: str) -> None:
+    def __get_usuario(self, nm_usuario: str) -> None:
         if not self._valida_string(nm_usuario):
-            print('O nm_usuario inválido, Necessário informar um texto!')
+            print('Usuário Inválido!')
             return None
         
-        fl_nao_existe = True
+        usuarios_retorno = filter(
+            lambda u: u['usuario'] == nm_usuario, 
+            self.__lista_usuarios
+        )
 
-        for id, usuario in enumerate(self.__lista_usuarios):
-            if self._existe_valor_dicionario(usuario, nm_usuario):
-                fl_nao_existe = False
-                self.__print_usuario(id, usuario)
-                break
-            fl_nao_existe = True
+        for id, usuario in enumerate(usuarios_retorno):
+            self.__print_usuario(id + 1, usuario)
 
-        if fl_nao_existe:
-            print(f'Usuário não localizado.')
+        return None
+
+    def __get_site(self, nm_site: str) -> None:
+        if not self._valida_string(nm_site):
+            print('Site Inválido!')
             return None
+                
+        usuarios_retorno = filter(
+            lambda u: u['site'] == nm_site, 
+            self.__lista_usuarios
+        )
+
+        for id, usuario in enumerate(usuarios_retorno):
+            self.__print_usuario(id + 1, usuario)
+
+        return None
 
     def __print_usuario(self, id: int, usuario: dict):
         if not usuario:
