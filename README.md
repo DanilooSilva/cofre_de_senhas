@@ -1,4 +1,4 @@
-# dtbasePassword
+# Cofre de Senhas
 
 Este projeto é um aplicativo em Python para armazenar credenciais de forma simples, com interface por terminal. Ele foi desenvolvido exclusivamente para fins de estudos e aprendizagem, como exemplo de organização de código em camadas, usando modelos, views e controllers.
 
